@@ -851,7 +851,7 @@
         // AttentionScorer params
         const fpsLimit = 30
         const captureFpsValue = fpsLimit
-        const earThresholdValue = 0.25
+        const earThresholdValue = 0.18
         const gazeThresholdValue = 0.012
         const gazeTimeThresholdValue = 2
         const perclosThresholdValue = 0.067
@@ -939,17 +939,7 @@
                     results = faceLandmarker.detectForVideo(video, nowInMs);
                 }
                 if (results.faceLandmarks && results.faceLandmarks[0]) {
-                    const rawLandmarks = results.faceLandmarks[0]
-
-                    const scaleX = canvasElement.width / video.videoWidth
-                    const scaleY = canvasElement.height / video.videoHeight;
-
-                    // let landmarks = []
-                    // for (let index = 0; index < rawLandmarks.length; index++) {
-                    //     const element = rawLandmarks[index];
-                    //     landmarks.push({x: element.x * scaleX, y: element.y * scaleY, z: element.z})
-                    // }
-                    let landmarks = rawLandmarks;
+                    const landmarks = results.faceLandmarks[0]
 
                     // Draw
                     drawingUtils.drawConnectors(
