@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #loadingOverlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #2D77F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .videoView {
+            position: relative;
+        }
+
+        .sk-circle-fade {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .sk-circle-fade-dot {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .sk-circle-fade-dot:before {
+            content: '';
+            display: block;
+            width: 20%;
+            height: 20%;
+            background-color: #fff;
+            border-radius: 100%;
+            animation: sk-circle-fade 1.2s infinite ease-in-out both;
+        }
+
+        .sk-circle-fade-dot:nth-child(1) {
+            transform: rotate(30deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(2) {
+            transform: rotate(60deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(3) {
+            transform: rotate(90deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(4) {
+            transform: rotate(120deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(5) {
+            transform: rotate(150deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(6) {
+            transform: rotate(180deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(7) {
+            transform: rotate(210deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(8) {
+            transform: rotate(240deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(9) {
+            transform: rotate(270deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(10) {
+            transform: rotate(300deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(11) {
+            transform: rotate(330deg);
+        }
+
+        .sk-circle-fade-dot:nth-child(1):before {
+            animation-delay: -1.1s;
+        }
+
+        .sk-circle-fade-dot:nth-child(2):before {
+            animation-delay: -1.0s;
+        }
+
+        .sk-circle-fade-dot:nth-child(3):before {
+            animation-delay: -0.9s;
+        }
+
+        .sk-circle-fade-dot:nth-child(4):before {
+            animation-delay: -0.8s;
+        }
+
+        .sk-circle-fade-dot:nth-child(5):before {
+            animation-delay: -0.7s;
+        }
+
+        .sk-circle-fade-dot:nth-child(6):before {
+            animation-delay: -0.6s;
+        }
+
+        .sk-circle-fade-dot:nth-child(7):before {
+            animation-delay: -0.5s;
+        }
+
+        .sk-circle-fade-dot:nth-child(8):before {
+            animation-delay: -0.4s;
+        }
+
+        .sk-circle-fade-dot:nth-child(9):before {
+            animation-delay: -0.3s;
+        }
+
+        .sk-circle-fade-dot:nth-child(10):before {
+            animation-delay: -0.2s;
+        }
+
+        .sk-circle-fade-dot:nth-child(11):before {
+            animation-delay: -0.1s;
+        }
+
+        @keyframes sk-circle-fade {
+
+            0%,
+            39%,
+            100% {
+                opacity: 0;
+                transform: scale(0.6);
+                /* Add units */
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1);
+                /* Add units */
+            }
+        }
+
+        .status-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background-color: rgba(45, 119, 246, 0.7);
+            color: #ffffff;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            padding: 10px 50px;
+            width: 50%;
+            max-width: 300px;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+        }
+
+        .status-container h2 {
+            margin: auto;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .status-content {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .status-label {
+            margin-right: 10px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .status-value {
+            margin-left: 10px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .buttonContainer {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+        }
+
+        #confirmButton {
+            width: calc(100% - 40px);
+            margin: 0 20px;
+            background-color: #1A56CF;
+            padding: 15px 20px;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+            display: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #confirmButton:hover {
+            background-color: #2961EA;
+        }
+
+        #stopButton {
+            width: calc(100% - 40px);
+            margin: 0 20px;
+            background-color: #1A56CF;
+            padding: 15px 20px;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+            display: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #stopButton:hover {
+            background-color: #2961EA;
+        }
+
+        #liveView {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .flippable {
+            transform: scaleX(-1);
+        }
+
+        #closeButton {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 2px;
+            z-index: 3;
+            display: none;
+        }
+
+        .output-canvas {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+            -moz-transform: rotateY(180deg);
+        }
+    </style>
+
+    <script async src="https://docs.opencv.org/master/opencv.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script>
+        class AlertManager {
+            constructor(alertSoundDurationInSeconds) {
+                this.alertSoundDurationInSeconds = alertSoundDurationInSeconds;
+                this.startAlarmTime = null;
+                this.lastAlertTime = null;
+                this.isAlarmed = false;
+            }
+
+            maybeAlert() {
+                if (!this.isAlarmed || (Date.now() - this.lastAlertTime) >= this.alertSoundDurationInSeconds * 1000) {
+                    // Play the alert sound only if it's not already playing or the last alert was more than alertSoundDurationInSeconds ago
+                    this.lastAlertTime = Date.now();
+                    this.isAlarmed = true;
+                    var sound = new Howl({
+                        src: ['bark.wav']
+                    });
+                    sound.play();
+                }
+
+            }
+
+            maybeResetAlert() {
+                if (!this.isAlarmed || (Date.now() - this.lastAlertTime) >= this.alertSoundDurationInSeconds * 1000) {
+                    document.getElementById('fatigue').textContent = 'Normal'
+                    document.getElementById('fatigue').style.color = 'white'
+                    this.isAlarmed = false;
+                }
+            }
+        }
+
+        function calculateEyeAspectRatio(landmarks) {
+            const leftEyeIndices = [362, 263, 374, 386];
+            const rightEyeIndices = [33, 133, 145, 159];
+
+            function getEyeAspectRatio(indices) {
+                const [l, r, t, b] = indices;
+                const lpEye = [landmarks[l].x, landmarks[l].y];
+                const rpEye = [landmarks[r].x, landmarks[r].y];
+                const eyeWidth = Math.hypot(lpEye[0] - rpEye[0], lpEye[1] - rpEye[1]);
+
+                const tpEye = [landmarks[t].x, landmarks[t].y];
+                const bpEye = [landmarks[b].x, landmarks[b].y];
+                const eyeHeight = Math.hypot(tpEye[0] - bpEye[0], tpEye[1] - bpEye[1]);
+
+                const ratio = eyeHeight / (eyeWidth + 1e-8);
+                return ratio;
+            }
+
+            const leftEyeRatio = getEyeAspectRatio(leftEyeIndices);
+            const rightEyeRatio = getEyeAspectRatio(rightEyeIndices);
+            const avgRatio = (leftEyeRatio + rightEyeRatio) / 2;
+            return avgRatio;
+        }
+
+        class GazeScorer {
+            _calc1EyeScore(landmarks, eyeLmsNums, eyeIrisNum) {
+                const iris = [landmarks[eyeIrisNum].x, landmarks[eyeIrisNum].y];
+
+                const eyeXMin = Math.min(...eyeLmsNums.map(index => landmarks[index].x));
+                const eyeYMin = Math.min(...eyeLmsNums.map(index => landmarks[index].y));
+                const eyeXMax = Math.max(...eyeLmsNums.map(index => landmarks[index].x));
+                const eyeYMax = Math.max(...eyeLmsNums.map(index => landmarks[index].y));
+
+                const eyeCenter = [
+                    (eyeXMin + eyeXMax) / 2,
+                    (eyeYMin + eyeYMax) / 2
+                ];
+
+                const eyeGazeScore = Math.sqrt(Math.pow(iris[0] - eyeCenter[0], 2) + Math.pow(iris[1] - eyeCenter[1], 2)) / eyeCenter[0];
+
+                return eyeGazeScore
+            }
+
+            calculateGazeScore(landmarks) {
+                const EYES_LMS_NUMS = [33, 133, 160, 144, 158, 153, 362, 263, 385, 380, 387, 373]
+                const LEFT_IRIS_NUM = 468
+                const RIGHT_IRIS_NUM = 473
+
+                const leftEyeResult = this._calc1EyeScore(landmarks, EYES_LMS_NUMS.slice(0, 6), LEFT_IRIS_NUM);
+                const rightEyeResult = this._calc1EyeScore(landmarks, EYES_LMS_NUMS.slice(6), RIGHT_IRIS_NUM);
+
+                const avgGazeScore = (leftEyeResult + rightEyeResult) / 2;
+
+                return avgGazeScore;
+            }
+        }
+
+        function calculateFaceOrientation(landmarks, width, height) {
+            // console.log(`width ${width} height ${height}`)
+            // Calculate roll, pitch, yaw
+            var face_2d = [];
+            var points = [1, 33, 263, 61, 291, 199];
+            var pointsObj = [0, -1.126865, 7.475604, // nose 1
+                -4.445859, 2.663991, 3.173422, //left eye corner 33
+                4.445859, 2.663991, 3.173422, //right eye corner 263
+                -2.456206, -4.342621, 4.283884,// left mouth corner 61
+                2.456206, -4.342621, 4.283884,// right mouth corner 291
+                0, -9.403378, 4.264492];//chin
+
+            var roll = 0,
+                pitch = 0,
+                yaw = 0;
+            var x, y, z;
+
+            // Camera internals
+            var normalizedFocaleY = 1.28; // Logitech 922
+            var focalLength = height * normalizedFocaleY;
+            var s = 0;//0.953571;
+            var cx = width / 2;
+            var cy = height / 2;
+
+            var cam_matrix = cv.matFromArray(3, 3, cv.CV_64FC1, [
+                focalLength,
+                s,
+                cx,
+                0,
+                focalLength,
+                cy,
+                0,
+                0,
+                1
+            ]);
+
+            //The distortion parameters
+            var k1 = 0.1318020374;
+            var k2 = -0.1550007612;
+            var p1 = -0.0071350401;
+            var p2 = -0.0096747708;
+            var dist_matrix = cv.matFromArray(4, 1, cv.CV_64FC1, [k1, k2, p1, p2]);
+
+            // Collect neccessary points
+            for (const point of points) {
+                var point0 = landmarks[point];
+
+                // drawingUtils.drawLandmarks(canvasCtx, [point0], { color: "#FFFFFF" }); // expects normalized landmark
+
+                var x = point0.x * width;
+                var y = point0.y * height;
+                //var z = point0.z;
+
+                // Get the 2D Coordinates
+                face_2d.push(x);
+                face_2d.push(y);
+            }
+            //
+            if (face_2d.length > 0) {
+                // Initial guess
+                //Rotation in axis-angle form
+                var rvec = new cv.Mat();// = cv.matFromArray(1, 3, cv.CV_64FC1, [0, 0, 0]); //new cv.Mat({ width: 1, height: 3 }, cv.CV_64FC1); // Output rotation vector
+                var tvec = new cv.Mat();// = cv.matFromArray(1, 3, cv.CV_64FC1, [-100, 100, 1000]); //new cv.Mat({ width: 1, height: 3 }, cv.CV_64FC1); // Output translation vector
+
+                const numRows = points.length;
+                const imagePoints = cv.matFromArray(numRows, 2, cv.CV_64FC1, face_2d);
+
+                var modelPointsObj = cv.matFromArray(6, 3, cv.CV_64FC1, pointsObj);
+
+                // https://docs.opencv.org/4.6.0/d9/d0c/group__calib3d.html#ga549c2075fac14829ff4a58bc931c033d
+                // https://docs.opencv.org/4.6.0/d5/d1f/calib3d_solvePnP.html
+                var success = cv.solvePnP(
+                    modelPointsObj, //modelPoints,
+                    imagePoints,
+                    cam_matrix,
+                    dist_matrix,
+                    rvec, // Output rotation vector
+                    tvec,
+                    false, //  uses the provided rvec and tvec values as initial approximations
+                    cv.SOLVEPNP_ITERATIVE//SOLVEPNP_EPNP //SOLVEPNP_ITERATIVE (default but pose seems unstable)
+                );
+
+                if (success) {
+                    var rmat = cv.Mat.zeros(3, 3, cv.CV_64FC1);
+                    const jaco = new cv.Mat();
+
+                    // Get rotational matrix rmat
+                    cv.Rodrigues(rvec, rmat, jaco); // jacobian	Optional output Jacobian matrix
+
+                    var sy = Math.sqrt(
+                        rmat.data64F[0] * rmat.data64F[0] + rmat.data64F[3] * rmat.data64F[3]
+                    );
+
+                    var singular = sy < 1e-6;
+
+                    // we need decomposeProjectionMatrix
+
+                    if (!singular) {
+                        //console.log("!singular");
+                        x = Math.atan2(rmat.data64F[7], rmat.data64F[8]);
+                        y = Math.atan2(-rmat.data64F[6], sy);
+                        z = Math.atan2(rmat.data64F[3], rmat.data64F[0]);
+                    } else {
+                        x = Math.atan2(-rmat.data64F[5], rmat.data64F[4]);
+                        //  x = Math.atan2(rmat.data64F[1], rmat.data64F[2]);
+                        y = Math.atan2(-rmat.data64F[6], sy);
+                        z = 0;
+                    }
+
+                    roll = z;
+                    pitch = x;
+                    yaw = y;
+
+                    var worldPoints = cv.matFromArray(9, 3, cv.CV_64FC1, [
+                        modelPointsObj.data64F[0] + 3,
+                        modelPointsObj.data64F[1],
+                        modelPointsObj.data64F[2], // x axis
+                        modelPointsObj.data64F[0],
+                        modelPointsObj.data64F[1] + 3,
+                        modelPointsObj.data64F[2], // y axis
+                        modelPointsObj.data64F[0],
+                        modelPointsObj.data64F[1],
+                        modelPointsObj.data64F[2] - 3, // z axis
+                        modelPointsObj.data64F[0],
+                        modelPointsObj.data64F[1],
+                        modelPointsObj.data64F[2], //
+                        modelPointsObj.data64F[3],
+                        modelPointsObj.data64F[4],
+                        modelPointsObj.data64F[5], //
+                        modelPointsObj.data64F[6],
+                        modelPointsObj.data64F[7],
+                        modelPointsObj.data64F[8], //
+                        modelPointsObj.data64F[9],
+                        modelPointsObj.data64F[10],
+                        modelPointsObj.data64F[11], //
+                        modelPointsObj.data64F[12],
+                        modelPointsObj.data64F[13],
+                        modelPointsObj.data64F[14], //
+                        modelPointsObj.data64F[15],
+                        modelPointsObj.data64F[16],
+                        modelPointsObj.data64F[17] //
+                    ]);
+
+                    //console.log("worldPoints : " + worldPoints.data64F);
+
+                    var imagePointsProjected = new cv.Mat(
+                        { width: 9, height: 2 },
+                        cv.CV_64FC1
+                    );
+                    cv.projectPoints(
+                        worldPoints, // TODO object points that never change !
+                        rvec,
+                        tvec,
+                        cam_matrix,
+                        dist_matrix,
+                        imagePointsProjected,
+                        jaco
+                    );
+
+                    jaco.delete();
+                    imagePointsProjected.delete();
+                }
+
+                rvec.delete();
+                tvec.delete();
+
+                roll = 180.0 * (roll / Math.PI)
+                pitch = 180.0 * (pitch / Math.PI)
+                yaw = 180.0 * (yaw / Math.PI)
+                return [roll, pitch, yaw]
+            }
+            // *****************************************************
+        }
+
+        class AttentionScorer {
+            constructor(
+                captureFPS,
+                {
+                    earThreshold = 0.2,
+                    perclosThreshold = 0.1,
+                    gazeThresold = 0.012,
+                    gazeTimeThreshold = 2,
+                    rollThreshold = 20,
+                    pitchThreshold = 20,
+                    yawThreshold = 20,
+                    distractedTimeThreshold = 2,
+                }) {
+                this.earThreshold = earThreshold;
+                this.captureFPS = captureFPS;
+                this.deltaTimeFrame = 1 / captureFPS;
+                this.perclosThreshold = perclosThreshold
+                this.perclosTimePeriod = 60;
+                this.eyeClosureCounter = 0
+
+                this.perclosScore = -1;
+
+                this.gazeThreshold = gazeThresold;
+                this.gazeTimeThreshold = gazeTimeThreshold;
+                this.lastTimeLookAhead = null;
+                this.notLookAheadTime = 0;
+
+                // Face-based
+                this.noFaceTimeDuration = 3;  // seconds
+                this.noFaceTime = 0;
+
+                // Distraction threshold
+                this.rollThreshold = rollThreshold;
+                this.pitchThreshold = pitchThreshold;
+                this.yawThreshold = yawThreshold;
+                this.distractedTime = 0;
+                this.lastTimeAttended = null;
+                this.distractedTimeThreshold = distractedTimeThreshold;
+            }
+
+            updateScores({
+                earScore = null,
+                gazeScore = null,
+                headRoll = null,
+                headPitch = null,
+                headYaw = null,
+                isFaceDetected = true,
+            }) {
+                // EAR score
+                if (earScore !== null && earScore <= this.earThreshold) {
+                    const maxValue = this.perclosThreshold * this.perclosTimePeriod / this.deltaTimeFrame * 2
+                    this.eyeClosureCounter = Math.min(this.eyeClosureCounter + 1, maxValue);
+                } else {
+                    this.eyeClosureCounter = Math.max(0, this.eyeClosureCounter - 1);
+                }
+
+                const closureTime = this.eyeClosureCounter * this.deltaTimeFrame;
+                this.perclosScore = closureTime / this.perclosTimePeriod;
+
+                // GAZE score
+                if (gazeScore !== null && gazeScore <= this.gazeThreshold) {
+                    this.lastLookAheadTime = Date.now() * 1000
+                    this.notLookAheadTime = 0.0
+                } else {
+                    this.notLookAheadTime = Date.now() * 1000 - this.lastLookAheadTime
+                }
+
+                // Distraction check
+                if ((headRoll !== null && Math.abs(headRoll) > this.rollThreshold) ||
+                    (headPitch !== null && 180 - Math.abs(headPitch) > this.pitchThreshold) ||
+                    (headYaw !== null && Math.abs(headYaw) > this.yawThreshold)) {
+                    this.distractedTime = Date.now() * 1000 - this.lastTimeAttended;
+                } else {
+                    this.lastTimeAttended = Date.now() * 1000
+                    this.distractedTime = 0
+                }
+
+                // no face
+                if (!isFaceDetected) {
+                    this.noFaceTime += this.deltaTimeFrame
+                } else {
+                    this.noFaceTime = 0;
+                }
+            }
+
+            isTired() {
+                return this.perclosScore > this.perclosThreshold
+            }
+
+            isLookingAway() {
+                return this.notLookAheadTime > this.gazeTimeThreshold
+            }
+
+            isDistracted() {
+                return this.distractedTime > this.distractedTimeThreshold
+            }
+
+            isNoFace() {
+                return this.noFaceTime > this.noFaceTimeDuration
+            }
+        }
+
+    </script>
+
+    <script id="rendered-js" type="module">
+        import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+
+        const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
+        const demosSection = document.getElementById("demos");
+        // const imageBlendShapes = document.getElementById("image-blend-shapes");
+        // const videoBlendShapes = document.getElementById("video-blend-shapes");
+        let faceLandmarker;
+        let runningMode = "VIDEO";
+        let confirmButton;
+        let webcamRunning = false;
+        const videoWidth = 480;
+        let t0 = undefined;
+        let counter = 0;
+        let isAlarmed = false;
+        let isFatigueStatusSet = false;
+        let isTracking = false;
+        let activeStream;
+        const canvasElement = document.getElementById('outputCanvas')
+        const canvasCtx = canvasElement.getContext('2d')
+        const drawingUtils = new DrawingUtils(canvasCtx);
+
+        async function runDemo() {
+            // Read more `CopyWebpackPlugin`, copy wasm set from "https://cdn.skypack.dev/node_modules" to `/wasm`
+            const filesetResolver = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
+            faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+                baseOptions: {
+                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+                    delegate: "GPU"
+                },
+                outputFaceBlendshapes: true,
+                runningMode,
+                numFaces: 1
+            });
+        }
+        runDemo();
+
+        const video = document.getElementById("webcam");
+
+        // Check if webcam access is supported.
+        function hasGetUserMedia() {
+            return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        }
+        // If webcam supported, add event listener to button for when user
+        // wants to activate it.
+        if (hasGetUserMedia()) {
+            console.log('webcam supported')
+        }
+        else {
+            console.warn("getUserMedia() is not supported by your browser");
+        }
+
+
+        function showLoadingSpinner() {
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            loadingOverlay.style.display = "flex";
+        }
+
+        function hideLoadingSpinner() {
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            loadingOverlay.style.display = "none";
+        }
+
+        function showConfirmButton() {
+            const confirmContainer = document.getElementById("confirmContainer");
+            confirmContainer.style.display = "block";
+            const confirmButton = document.getElementById("confirmButton");
+            confirmButton.style.display = "block"
+            confirmButton.addEventListener("click", onConfirmClick);
+        }
+
+        function hideConfirmButton() {
+            const confirmContainer = document.getElementById("confirmContainer");
+            confirmContainer.style.display = "none";
+        }
+
+        function showStopButton() {
+            const stopContainer = document.getElementById("stopContainer");
+            stopContainer.style.display = "block"
+            const stopButton = document.getElementById("stopButton");
+            stopButton.style.display = "block"
+            stopButton.addEventListener('click', handleCloseButton)
+        }
+
+        function handleCloseButton() {
+            // redirect to /home/screening
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => {
+                    track.stop();
+                });
+            }
+
+            sendMessageToDart()
+        }
+
+        function showStatusContainer() {
+            document.getElementById('statusContainer').style.display = 'block'
+        }
+
+        function sendMessageToDart() {
+            window.parent.postMessage('stop', '*');
+        }
+
+        function generateUUID() {
+            let dt = new Date().getTime();
+            const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = (dt + Math.random() * 16) % 16 | 0;
+                dt = Math.floor(dt / 16);
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            return uuid;
+        }
+
+        const waitForCv = new Promise((resolve, reject) => {
+            const maxWaitTime = 60000;
+            let elapsedTime = 0;
+
+            function checkCv() {
+                try {
+                    let mat = new cv.Mat()
+                    resolve();
+                } catch (error) {
+                    console.info('cv not loaded')
+                    if (elapsedTime >= maxWaitTime) {
+                        reject(new Error("Timeout: cv not loaded within the specified time"))
+                    } else {
+                        setTimeout(checkCv, 100);
+                        elapsedTime += 100;
+                    }
+                }
+            }
+            checkCv();
+        })
+
+        const waitForFaceLandmarker = new Promise((resolve, reject) => {
+            const maxWaitTime = 60000; // Maximum wait time in milliseconds (60 seconds)
+            let elapsedTime = 0;
+
+            function checkFaceLandmarker() {
+                if (faceLandmarker) {
+                    resolve();
+                } else if (elapsedTime >= maxWaitTime) {
+                    reject(new Error("Timeout: FaceLandmarker not loaded within the specified time."));
+                } else {
+                    setTimeout(checkFaceLandmarker, 100); // Check again after 100 milliseconds
+                    elapsedTime += 100;
+                }
+            }
+
+            checkFaceLandmarker();
+        });
+
+
+        waitForFaceLandmarker
+            .then(() => {
+                console.info('face landmarker loaded')
+                // Continue with webcam activation once FaceLandmarker is loaded
+                if (webcamRunning === true) {
+                    webcamRunning = false;
+                } else {
+                    webcamRunning = true;
+                }
+
+                waitForCv.then(() => {
+                    localStorage.setItem('flutter.fatigueStatus', '"Normal"')
+                    const sessionId = generateUUID();
+                    localStorage.setItem('flutter.fatigueStatusTrackingSessionId', `"${sessionId}"`);
+
+                    console.info('cv loaded')
+
+                    // getUsermedia parameters.
+                    const constraints = {
+                        video: { facingMode: "user" }
+                    };
+
+                    // Activate the webcam stream.
+                    navigator.mediaDevices.getUserMedia(constraints)
+                        .then(function (stream) {
+                            activeStream = stream;
+                            video.srcObject = stream;
+                            video.addEventListener("loadeddata", function () {
+
+                                showConfirmButton()
+                                runTracking()
+                            });
+                        })
+                        .catch(function (error) {
+                            console.error("Error accessing webcam:", error);
+                            hideLoadingSpinner();
+                        });
+                })
+                    .catch((error) => {
+                        console.error(error.message);
+                        hideLoadingSpinner();
+                    });
+
+            })
+            .catch((error) => {
+                console.error(error.message);
+                hideLoadingSpinner();
+            });
+
+
+
+        let lastVideoTime = -1;
+        let results = undefined;
+
+        // AttentionScorer params
+        const fpsLimit = 30
+        const captureFpsValue = fpsLimit
+        const earThresholdValue = 0.25
+        const gazeThresholdValue = 0.012
+        const gazeTimeThresholdValue = 2
+        const perclosThresholdValue = 0.067
+        const earTimeThresholdValue = 2
+        const rollThresholdValue = 15
+        const pitchThresholdValue = 15
+        const yawThresholdValue = 15
+        const distractedTimeThresholdValue = 2
+        const poseTimeThresholdValue = 4.0
+        const verboseValue = false
+        const alarmSoundDurationInSeconds = 3;
+
+        const alertManager = new AlertManager(3);
+        const gazeScorer = new GazeScorer()
+        const attentionScorer = new AttentionScorer(
+            captureFpsValue,
+            {
+                earThreshold: earThresholdValue,
+                perclosThreshold: perclosThresholdValue,
+                gazeThresold: gazeThresholdValue,
+                gazeTimeThreshold: gazeTimeThresholdValue,
+                rollThreshold: rollThresholdValue,
+                pitchThreshold: pitchThresholdValue,
+                yawThreshold: yawThresholdValue,
+                distractedTimeThreshold: distractedTimeThresholdValue
+            },
+        );
+
+        function onConfirmClick() {
+            isTracking = true;
+            hideConfirmButton();
+            showStopButton();
+        }
+
+        async function runTracking() {
+            showStatusContainer()
+            hideLoadingSpinner()
+
+            async function predict() {
+
+                const video = document.getElementById("webcam");
+                const canvasElement = document.getElementById("outputCanvas");
+
+                // Calculate the aspect ratio of the video
+                const videoAspectRatio = video.videoWidth / video.videoHeight;
+
+                // Calculate the aspect ratio of the window
+                const windowAspectRatio = window.innerWidth / window.innerHeight;
+
+                let videoWidth, videoHeight;
+
+                // If the window aspect ratio is greater than the video aspect ratio
+                if (windowAspectRatio > videoAspectRatio) {
+                    // Set video dimensions to fit the window width
+                    videoWidth = window.innerWidth;
+                    videoHeight = videoWidth / videoAspectRatio;
+                } else {
+                    // Set video dimensions to fit the window height
+                    videoHeight = window.innerHeight;
+                    videoWidth = videoHeight * videoAspectRatio;
+                }
+
+                // Set video dimensions
+                video.style.width = videoWidth + "px";
+                video.style.height = videoHeight + "px";
+
+                // Set canvas dimensions to match video dimensions
+                canvasElement.width = videoWidth;
+                canvasElement.height = videoHeight;
+
+                // Position the canvas to cover the entire window
+                canvasElement.style.width = canvasElement.width + "px";
+                canvasElement.style.height = canvasElement.height + "px";
+                canvasElement.style.left = "0";
+                canvasElement.style.top = "0";
+
+                // Now let's start detecting the stream.
+                let nowInMs = Date.now();
+                if (lastVideoTime !== video.currentTime) {
+                    lastVideoTime = video.currentTime;
+                    results = faceLandmarker.detectForVideo(video, nowInMs);
+                }
+                if (results.faceLandmarks && results.faceLandmarks[0]) {
+                    const rawLandmarks = results.faceLandmarks[0]
+
+                    const scaleX = canvasElement.width / video.videoWidth
+                    const scaleY = canvasElement.height / video.videoHeight;
+                    console.log(canvasElement.width, canvasElement.height, video.videoWidth, video.videoHeight)
+                    console.log('before', rawLandmarks[0], scaleX, scaleY)
+
+                    // let landmarks = []
+                    // for (let index = 0; index < rawLandmarks.length; index++) {
+                    //     const element = rawLandmarks[index];
+                    //     landmarks.push({x: element.x * scaleX, y: element.y * scaleY, z: element.z})
+                    // }
+                    let landmarks = rawLandmarks;
+
+                    console.log('after', landmarks[0])
+
+                    // Draw
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+                        { color: "#E0E0E0" }
+                    );
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+                        { color: "#E0E0E0" }
+                    );
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+                        { color: "#E0E0E0" }
+                    );
+
+                    const ear = calculateEyeAspectRatio(landmarks)
+                    const gazeScore = gazeScorer.calculateGazeScore(landmarks)
+
+                    const [roll, pitch, yaw] = calculateFaceOrientation(landmarks, video.videoWidth, video.videoHeight)
+
+                    document.getElementById('pitch').textContent = (180 - Math.abs(pitch)).toFixed(1)
+                    document.getElementById('yaw').textContent = yaw.toFixed(1)
+                    document.getElementById('roll').textContent = roll.toFixed(1)
+
+                    attentionScorer.updateScores({ earScore: ear, gazeScore: gazeScore, headRoll: roll, headPitch: pitch, headYaw: yaw })
+                } else {
+                    // No face detected
+                    attentionScorer.updateScores({ isFaceDetected: false })
+                }
+
+                if (attentionScorer.isTired()) {
+                    document.getElementById('eyeOpen').textContent = 'No'
+                    document.getElementById('eyeOpen').style.color = 'red'
+                    document.getElementById('fatigue').textContent = 'High'
+                    document.getElementById('fatigue').style.color = 'red'
+                    document.getElementById('fatigueStatus').textContent = 'High'
+
+                    if (isTracking) {
+                        alertManager.maybeAlert()
+                        if (!isFatigueStatusSet) {
+                            localStorage.setItem('flutter.fatigueStatus', '"High"')
+                            isFatigueStatusSet = true
+                        }
+                    }
+                } else {
+                    document.getElementById('eyeOpen').textContent = 'Yes'
+                    document.getElementById('eyeOpen').style.color = 'white'
+                }
+
+                if (attentionScorer.isNoFace()) {
+                    document.getElementById('eyeOpen').textContent = 'No'
+                    document.getElementById('eyeOpen').style.color = 'red'
+                    document.getElementById('faceDetect').textContent = 'No'
+                    document.getElementById('faceDetect').style.color = 'red'
+                    document.getElementById('fatigue').textContent = 'High'
+                    document.getElementById('fatigue').style.color = 'red'
+
+                    if (isTracking) {
+                        alertManager.maybeAlert()
+                        if (!isFatigueStatusSet) {
+                            localStorage.setItem('flutter.fatigueStatus', '"High"')
+                            isFatigueStatusSet = true
+                        }
+                    }
+                } else {
+                    document.getElementById('faceDetect').textContent = 'Yes'
+                    document.getElementById('faceDetect').style.color = 'white'
+                }
+
+                if (attentionScorer.isDistracted()) {
+                    document.getElementById('fatigue').textContent = 'High'
+                    document.getElementById('fatigue').style.color = 'red'
+                    document.getElementById('fatigueStatus').textContent = 'High'
+
+                    if (isTracking) {
+                        alertManager.maybeAlert()
+                        if (!isFatigueStatusSet) {
+                            localStorage.setItem('flutter.fatigueStatus', '"High"')
+                            isFatigueStatusSet = true
+                        }
+                    }
+                }
+
+                alertManager.maybeResetAlert()
+
+                // Call this function again to keep predicting when the browser is ready.
+                if (webcamRunning === true) {
+                    window.requestAnimationFrame(predict);
+                }
+            }
+            predict()
+        }
+    </script>
+</head>
+
+<body style="padding: 0; margin: 0;">
+    <!-- Loading Spinner Overlay -->
+    <div id="loadingOverlay">
+
+        <button id="closeButton" type="button">
+            <img src="close.svg" alt="close icon" style="width: 20px; height: 20px; background-color: transparent; " />
+        </button>
+
+        <div class="sk-circle-fade">
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+            <div class="sk-circle-fade-dot"></div>
+        </div>
+    </div>
+
+    <div id="liveView" class="videoView">
+        <div id="statusContainer" class="status-container">
+            <h2 class="status-title">Status</h2>
+            <div class="status-content">
+                <div class="status-label">Pitch:</div>
+                <div id="pitch" class="status-value">0</div>
+            </div>
+            <div class="status-content">
+                <div class="status-label">Yaw:</div>
+                <div id="yaw" class="status-value">0</div>
+            </div>
+            <div class="status-content">
+                <div class="status-label">Roll:</div>
+                <div id="roll" class="status-value">0</div>
+            </div>
+            <div class="status-content">
+                <div class="status-label">Eye open:</div>
+                <div id="eyeOpen" class="status-value">No</div>
+            </div>
+            <div class="status-content">
+                <div class="status-label">Face detected:</div>
+                <div id="faceDetect" class="status-value">No</div>
+            </div>
+            <div class="status-content">
+                <div class="status-label">Fatigue:</div>
+                <div id="fatigue" class="status-value">Normal</div>
+            </div>
+        </div>
+
+        <div style="position: relative;">
+            <video id="webcam" class="flippable" style="position: absolute" autoplay playsinline></video>
+            <canvas class="output-canvas" id="outputCanvas" style="position: absolute; left: 0px; top: 0px"></canvas>
+        </div>
+        <div id="fatigueStatus" style="display: none;">Normal</div>
+
+        <div id="confirmContainer" class="buttonContainer" style="display: none;">
+            <button id="confirmButton" type="button">I'm ready</button>
+        </div>
+        <div id="stopContainer" class="buttonContainer" style="display: none;">
+            <button id="stopButton" type="button">Stop</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
