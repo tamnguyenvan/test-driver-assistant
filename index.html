@@ -589,7 +589,7 @@
                     this.eyeClosureCounter = Math.max(0, this.eyeClosureCounter - 1);
                 }
 
-                console.log('sss', this.eyeClosureCounter, this.deltaTimeFrame)
+                console.log('sss', earScore, this.earThreshold, this.eyeClosureCounter, this.deltaTimeFrame)
 
                 const closureTime = this.eyeClosureCounter * this.deltaTimeFrame;
                 this.perclosScore = closureTime / this.perclosTimePeriod;
