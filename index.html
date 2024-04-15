@@ -589,6 +589,8 @@
                     this.eyeClosureCounter = Math.max(0, this.eyeClosureCounter - 1);
                 }
 
+                console.log('sss', this.eyeClosureCounter, this.deltaTimeFrame)
+
                 const closureTime = this.eyeClosureCounter * this.deltaTimeFrame;
                 this.perclosScore = closureTime / this.perclosTimePeriod;
 
@@ -619,10 +621,12 @@
             }
 
             isTired() {
+                console.log('isTired', this.perclosScore, this.perclosThreshold)
                 return this.perclosScore > this.perclosThreshold
             }
 
             isLookingAway() {
+                console.log('lookingAway', this.notLookAheadTime, this.gazeTimeThreshold)
                 return this.notLookAheadTime > this.gazeTimeThreshold
             }
 
@@ -918,11 +922,15 @@
                 canvasElement.width = videoWidth;
                 canvasElement.height = videoHeight;
 
-                // Position the canvas to cover the entire window
-                canvasElement.style.width = canvasElement.width + "px";
-                canvasElement.style.height = canvasElement.height + "px";
-                canvasElement.style.left = "0";
-                canvasElement.style.top = "0";
+                // Position the canvas and video to center the screen
+                const offsetX = (window.innerWidth - videoWidth) / 2;
+                const offsetY = (window.innerHeight - videoHeight) / 2;
+
+                video.style.left = offsetX + "px";
+                video.style.top = offsetY + "px";
+
+                canvasElement.style.left = offsetX + "px";
+                canvasElement.style.top = offsetY + "px";
 
                 // Now let's start detecting the stream.
                 let nowInMs = Date.now();
@@ -935,8 +943,6 @@
 
                     const scaleX = canvasElement.width / video.videoWidth
                     const scaleY = canvasElement.height / video.videoHeight;
-                    console.log(canvasElement.width, canvasElement.height, video.videoWidth, video.videoHeight)
-                    console.log('before', rawLandmarks[0], scaleX, scaleY)
 
                     // let landmarks = []
                     // for (let index = 0; index < rawLandmarks.length; index++) {
@@ -944,8 +950,6 @@
                     //     landmarks.push({x: element.x * scaleX, y: element.y * scaleY, z: element.z})
                     // }
                     let landmarks = rawLandmarks;
-
-                    console.log('after', landmarks[0])
 
                     // Draw
                     drawingUtils.drawConnectors(
